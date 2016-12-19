@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html ng-app="linkenBlogApp">
+<head>
+    <title>linkenLiu</title>
+    <base href="/">
+    <% include layout/header.html %>
+</head>
+<body class="page-header-fixed">
+<% include layout/topbar.html %>
+<div class="page-container row-fluid" style="margin-top: -3px">
+    <% include layout/leftmenu.html %>
+    <div class="page-content">
+        <div class="container-fluid" style="border-left: 1px solid #cccccc">
+            <div ng-view></div>
+        </div>
+    </div>
+</div>
+<% include layout/footer.html %>
+</body>
+</html>
+

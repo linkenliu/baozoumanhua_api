@@ -1,0 +1,32 @@
+<div class="modal" id="deleteModal" tabindex="0" role="dialog" aria-labelledby="gridSystemModalLabel"
+     style="display:none;overflow-y:auto">
+    <input type="hidden" ng-model="delete_id"/>
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header center">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        ng-click="showModal('deleteModal')"></button>
+                <h2 class="modal-title">{{modal_title}}</h2>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="box-content">
+                        <span style="color: #d9534f;font-size: 26px">你确认要删除<span style="color: #5cb85c"
+                                >{{delete_title}}</span>吗?</span>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="showModal('deleteModal')">
+                    <i
+                            class="icon-remove"></i> 取消
+
+                </button>
+                <button type="button" class="btn red" ng-click="destroy()"><i
+                        class="icon-ok"></i> 确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,205 @@
+<div class="row-fluid" style="margin-top: 10px">
+
+            <div class="span12">
+                <h2>小故事
+                </h2>
+                <div class=" span12">
+                        <a ng-click="showAddStory()"  class="btn green mini" style="float: right;margin-right: 84px;margin-top: -40px"> <i
+                                class="icon-plus"></i> 新增</a>
+                </div>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="alignRight" style="border-left: none">
+                                    <input type="text" style="width: 280px !important;margin-top: 10px;float: right" aria-controls="sample_editable_1" ng-model="searchText" ng-change="searchStory()" class="m-wrap medium "  placeholder="Search">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-hover" style="table-layout:fixed;">
+                        <thead>
+                        <tr>
+                            <th><a href="#" ng-click="changeOrder('story_id')" ng-model="order">ID<span style="font-size: 20px" ng-model="order_class" class="{{order_class}}"></span></a></th>
+                            <th>展示图</th>
+                            <th>标题</th>
+                            <th>编辑者</th>
+                            <th>点击/收藏数</th>
+                            <th>内容</th>
+                            <th>状态</th>
+                            <th><a href="#" ng-click="changeOrder('create_date')">创建时间<span style="font-size: 20px" ng-model="order_class2" class="{{order_class2}}"></span></a></th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in storyList">
+                                <td>{{item.story_id}}</td>
+                                <td>
+                                    <img src="{{item.cover}}" class="_id" style="width: 70px">
+                                </td>
+                                <td>
+                                    {{item.title}}
+                                </td>
+
+                                <td>{{item.user_id.username}}</td>
+                                <td>
+                                        {{item.view_count}}
+                                    <hr/>
+                                        {{item.collect_count}}
+                                </td>
+                                <td>
+                                        {{item.content}}
+                                </td>
+                                <td>
+                                    {{showState(item)}}
+                                </td>
+                                <td>
+                                    {{item.create_date}}
+                                </td>
+                                <td>
+                                    <button class="btn mini blue" ng-click='showEditStory(item._id)'>
+                                        <i class="icon-trash" style="margin-left: 5px"></i> Edit
+                                    </button>
+                                    <button class="btn mini red" ng-click='deleteStory(item._id,item.title)'>
+                                        <i class="icon-trash" style="margin-left: 5px"></i> Del
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+
+
+<div class="modal" id="showAddStoryModal" tabindex="0" role="dialog" aria-labelledby="gridSystemModalLabel"
+     style="display:none;overflow-y:auto">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header center">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        ng-click="showModal('showAddStoryModal')"></button>
+                <h2 class="modal-title">新增小故事</h2>
+            </div>
+            <form class="form-horizontal" id="frmSaveStory">
+                <div class="modal-body">
+                    <div class="box-content">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">标题:</label>
+                                    <input type="text" placeholder="请输入标题" id="title" name="title" ng-model="title" required="required" class="m-wrap span9">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">展示图:</label>
+                                    <input type="file" multiple accept="image/jpg,image/png" class="span5" name="cover"><br/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">图片:</label>
+                                    <input type="file" multiple accept="image/jpg,image/png" class="span5" name="image"><br/>
+                                    <label id="open_err" style="color: red"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">描述:</label>
+                                    <textarea type="text" placeholder="请输入内容" id="content" name="content"  class="m-wrap span9"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="showModal('showAddStoryModal')">
+                    <i
+                            class="icon-remove"></i> 取消
+
+                </button>
+                <button type="button" class="btn blue" ng-click="saveStory()"><i
+                        class="icon-ok"></i> 确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="showEditStoryModal" tabindex="0" role="dialog" aria-labelledby="gridSystemModalLabel"
+     style="display:none;overflow-y:auto">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header center">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        ng-click="showModal('showEditStoryModal')"></button>
+                <h2 class="modal-title">编辑小故事</h2>
+            </div>
+            <form class="form-horizontal" id="frmEditStory">
+                <input type="hidden"  ng-model="story._id"/>
+                <div class="modal-body">
+                    <div class="box-content">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">标题:</label>
+                                    <input type="text" placeholder="请输入标题"  ng-model="story.title" required="required" class="m-wrap span9">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">展示图:</label>
+                                    <div file-input="file" on-change="uploadStoryCoverFile(this)"></div><br/>
+                                    <img src="{{story.cover}}" class="image_url" style="max-width: 80px;max-height: 80px">
+                                    <input type="hidden" value="{{story.cover}}" ng-model="story.cover" name="cover" >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">图片:</label>
+                                    <div file-upload="file" on-change="uploadStoryImageurlFile(this)"></div><br/>
+                                    <img src="{{story.image_url}}" class="image_url" style="max-width: 80px;max-height: 80px">
+                                    <input type="hidden" value="{{story.image_url}}" ng-model="story.image_url">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" style="width: 100px">描述:</label>
+                                    <textarea type="text" placeholder="请输入内容"  ng-model="story.content"   class="m-wrap span9">{{story.content}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="showModal('showEditStoryModal')">
+                    <i
+                            class="icon-remove"></i> 取消
+
+                </button>
+                <button type="button" class="btn blue" ng-click="editStory()"><i
+                        class="icon-ok"></i> 确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <div ng-include="' ./../admin/tpl/delete.html'"></div>

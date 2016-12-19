@@ -1,0 +1,161 @@
+<div class="row-fluid" style="margin-top: 10px">
+
+            <div class="span12">
+                <h2>帖子信息
+                </h2>
+
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td style="border-right: none">
+                                    <span>类型: </span><select style="margin-top: 10px" class="small m-wrap" tabindex="1" ng-model="topic_type" ng-options="t.value as t.text for t in topicType" ng-change="changeTopicType()">
+                                </select>
+                                </td>
+                                <td class="alignRight" style="border-left: none">
+                                    <input type="text" style="width: 280px !important;margin-top: 10px;float: right" aria-controls="sample_editable_1" ng-model="searchText" ng-change="searchChannel()" class="m-wrap medium "  placeholder="Search">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-hover" style="table-layout:fixed;">
+                        <thead>
+                        <tr>
+                            <th>标题/<a href="#" ng-click="changeOrder('topic_id')" ng-model="order">ID<span style="font-size: 20px" ng-model="order_class" class="{{order_class}}"></span></a></th>
+                            <th ng-if="topic_type != 'text'">PATH</th>
+                            <th>站点/站点ID</th>
+                            <th>类型</th>
+                            <th ng-if="topic_type == 'videos'">video</th>
+                            <th ng-if="topic_type != 'videos'">用户</th>
+                            <th ng-if="topic_type != 'videos'">图像</th>
+                            <th><a href="#" ng-click="changeOrder('release_date')">发布时间<span style="font-size: 20px" ng-model="order_class2" class="{{order_class2}}"></span></a></th>
+                            <th>点击/收藏数</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="topic in topicList">
+                                <td style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;cursor: pointer" >
+                                    <span  editable-text="topic.title"  e-name="title" e-form="rowform" e-required="true" >
+                                        {{topic.title}}
+                                    </span>
+                                    <br/><br/>
+                                    <i class="label label-info">{{topic.topic_id}}</i>
+                                </td>
+
+                                <td ng-if="topic_type != 'text'">
+                                    <a ng-if="topic.image_url" class="fancybox-button" data-rel="fancybox-button" title="{{topic.title}}" target="_self" href="{{topic.image_url}}">
+                                        <div class="zoom">
+
+                                            <img style="width: 80px;height: 80px"  src="{{topic.image_url}}" alt="{{topic.title}}">
+
+                                            <div class="zoom-icon"></div>
+
+                                        </div>
+                                    </a>
+
+                                </td>
+                                <td>
+                                    <span >
+                                        <i class="label label-info">{{topic.site_type}}</i><br/><br/>
+                                        <i class="label label-info">{{topic.site_id}}</i>
+                                    </span>
+                                </td>
+                                <td >
+                                    <span >
+                                        <i class="label label-info">{{topic.topic_type}}</i><br/><br/>
+                                        <i class="label label-info">{{topic.topic_second_type}}</i>
+                                    </span>
+                                </td>
+                                <td ng-if="topic_type == 'videos'">
+                                     <span style="color: #000;font-size: 15px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;display:block" editable-text="topic.video_url"  e-name="video_url" e-form="rowform">
+                                        {{topic.video_url}}
+                                    </span>
+                                </td>
+                                <td ng-if="topic_type != 'videos'">
+                                    <span style="width:2%">
+                                        {{topic.username}}
+                                    </span>
+                                </td>
+                                <td style="width: 8%" ng-if="topic_type != 'videos'">
+                                    <span >
+                                        <img style="border-radius: 50% !important;" src="{{topic.avatar}}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span >
+                                        {{topic.release_date}}
+                                    </span>
+                                </td>
+                                <td style="width: 10%">
+                                    <span editable-number="topic.view_count"  e-name="view_count" e-form="rowform">
+                                        {{topic.view_count}}
+                                    </span>
+                                    <br/><hr/>
+                                    <span editable-number="topic.collect_count"  e-name="collect_count" e-form="rowform" >
+                                        {{topic.collect_count}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span editable-select='topic.state', e-name='state', e-form='rowform', e-ng-options='s.value as s.text for s in states'>{{showState(topic)}}</span>
+                                </td>
+                                <td>
+                                    <form editable-form name='rowform' ng-show='rowform.$visible' onbeforesave='saveTopic(topic._id,$data,rowform)'  shown="inserted == topic">
+                                        <button class="btn mini blue" type="submit" ng-disabled='rowform.$waiting'>
+                                            <i class="icon-ok"></i> Save
+                                        </button>
+                                        <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn mini">
+                                            <i class="icon-remove"></i></i> Cancel
+                                        </button>
+                                    </form>
+
+                                    <button class="btn mini blue" ng-show='!rowform.$visible' ng-click='rowform.$show()'>
+                                        <i class="icon-edit"></i> Edit
+                                    </button>
+
+                                    <button class="btn mini red" ng-show='!rowform.$visible' ng-click='deleteTopic(topic._id,topic.title)'>
+                                        <i class="icon-trash" style="margin-left: 5px"></i> Del
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <nav>
+                        <ul class="pager">
+                            <li>
+                                选择页数:
+                            </li>
+                            <li>
+                             <select style="margin-top: 8px;width: 70px !important;" class="small m-wrap" tabindex="1" ng-model="pageSize" ng-options="p.value as p.text for p in pageSizes" ng-change="changePageSize()"></select></li>
+                            <li ><a href="#" class="disabled" ng-if="currentPage==1">上一页</a></li>
+                            <li ><a href="" ng-click="topicPrev()" ng-if="currentPage>1">上一页</a></li>
+                            <li>第{{currentPage}}页</li>
+                            <li ><a href="" ng-click="topicNext()" ng-if="currentPage!=totalPage">下一页</a></li>
+                            <li ><a href="#"  class="disabled" ng-if="currentPage==totalPage">下一页</a></li>
+                            <li>共{{totalPage}}页</li>
+                            <li>共{{totalCount}}条</li>
+                            <li>每页20条</li>
+                            <li>
+                                <input type="text" style="width: 50px !important;margin-top: 8px" ng-model="pageIndex" ng-change="checkPageIndex()"  class="m-wrap medium"  placeholder="GO">
+                            </li>
+                            <li>
+                                <a class="btn mini" ng-click="goTopic()">GO</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+    </div>
+
+
+
+
+ <div ng-include="' ./../admin/tpl/delete.html'"></div>
+
+<script>
+    jQuery(document).ready(function () {
+        Gallery.init();
+    });
+
+</script>
+

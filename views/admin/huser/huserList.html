@@ -1,0 +1,51 @@
+<div class="row-fluid" style="margin-top: 10px">
+
+            <div class="span12">
+                <h2>用户信息
+                </h2>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="alignRight" style="border-left: none">
+                                    <input type="text" style="width: 280px !important;margin-top: 10px;float: right" aria-controls="sample_editable_1" ng-model="searchText" ng-change="searchStory()" class="m-wrap medium "  placeholder="Search">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-hover" style="table-layout:fixed;">
+                        <thead>
+                        <tr>
+                            <th><a href="#" ng-click="changeOrder('story_id')" ng-model="order">ID<span style="font-size: 20px" ng-model="order_class" class="{{order_class}}"></span></a></th>
+                            <th>用户名</th>
+                            <th>昵称</th>
+                            <th>图像</th>
+                            <th>生日</th>
+                            <th>邮箱</th>
+                            <th><a href="#" ng-click="changeOrder('create_date')">注册时间<span style="font-size: 20px" ng-model="order_class2" class="{{order_class2}}"></span></a></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in huserList">
+                                <td>{{item.number_id}}</td>
+                                <td>
+                                    {{item.username}}
+                                </td>
+
+                                <td>{{item.nickname}}</td>
+
+                                <td>
+                                    <img ng-if="item.avatar"  style="width: 80px;height: 80px;border-radius: 50% !important;margin-left: -14px;" src="{{item.avatar}}"/>
+                                    <img ng-if="!item.avatar"  style="width: 80px;height: 80px;border-radius: 50% !important;margin-left: -14px;" src="http://ohaqd986p.bkt.clouddn.com/noavatar.jpg"/>
+                                </td>
+                                <td>{{item.birthday}}</td>
+                                <td>{{item.email}}</td>
+                                <td>{{item.create_date}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+
+
+

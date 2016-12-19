@@ -1,0 +1,22 @@
+<div class="row-fluid">
+    <div class="span12">
+        <!--<object type="application/x-shockwave-flash" class="player" data="http://static.hdslb.com/play.swf" width="950" height="482" id="player_placeholder" style="visibility: visible;"><param name="bgcolor" value="#ffffff"><param name="allowfullscreeninteractive" value="true"><param name="allowfullscreen" value="true"><param name="quality" value="high"><param name="allowscriptaccess" value="always"><param name="wmode" value="direct"><param name="flashvars" value="cid=9139905&amp;aid=5627542&amp;pre_ad=0"></object>-->
+        <h2>视频墙</h2>
+
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <td class="alignRight">
+                    <input type="text" style="width: 280px !important;" aria-controls="sample_editable_1" ng-model="searchText" ng-change="searchTopic()" class="m-wrap medium offset8"  placeholder="Search">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="span3" ng-repeat="topic in topicList"
+             style="margin-left: 10px;margin-right: 10px;margin-top: 30px">
+                <a ng-click="showVideo(topic.video_url)" class="btn btn-primary btn-lg" data-toggle="modal" data-target=""><img src="{{topic.image_url}}" style="width: 300px"/></a>
+                <span style="color: #000;font-size: 15px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;display:block"><span style="color: #53e578">{{topic.topic_id}}</span>/{{topic.title}}/</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+.bar.bar-pink {
+    border-color: #ffc900;
+    background-color: #ffc900;
+    background-image: linear-gradient(0deg, #ffc900, #ffc900 50%, transparent 50%);
+    color: #fff;
+}
+.bar-pink .button.button-clear {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+    color: #fff;
+    font-size: 17px;
+}
+
+.bar-pink .button {
+    border-color: #ffc900;
+    background-color: #ffc900;
+    color: #fff;
+}
+
+.tabs-striped.tabs-color-pink .tab-item.active, .tabs-striped.tabs-color-pink .tab-item.activated {
+    margin-top: -2px;
+    color: #ffc900;
+    border: 0 solid #ffc900;
+    border-top-width: 2px;
+}
+.active1{
+    color: #000 !important;
+}

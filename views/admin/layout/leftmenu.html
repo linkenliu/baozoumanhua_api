@@ -1,0 +1,64 @@
+<div class="page-sidebar nav-collapse collapse" style="background-color: #F7F7F7;">
+    <!-- BEGIN SIDEBAR MENU -->
+    <ul class="page-sidebar-menu">
+        <li>
+            <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+            <div class="sidebar-toggler hidden-phone" style="margin-bottom: 13px"></div>
+            <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+        </li>
+
+        <li class="" id="adminIndex_li">
+            <a href="/admin/index" class="ajax-link">
+                <i class="icon-home"></i>
+                <span class="title" >系统概述</span>
+                <span class="selected"></span>
+            </a>
+        </li>
+        <li class="" >
+            <a href="/admin/videowall" class="ajax-link">
+                <i class="icon-youtube-play"></i>
+                <span class="title" >视频墙</span>
+                <span class="selected"></span>
+            </a>
+        </li>
+        <li class="" >
+            <a href="/admin/topic" class="ajax-link">
+                <i class="icon-tasks"></i>
+                <span class="title" >帖子信息</span>
+                <span class="selected"></span>
+            </a>
+        </li>
+        <li class="" >
+            <a href="/admin/story" class="ajax-link">
+                <i class="icon-paste"></i>
+                <span class="title" >小故事</span>
+                <span class="selected"></span>
+            </a>
+        </li>
+        <li class="" >
+            <a href="/admin/user" class="ajax-link">
+                <i class="icon-user"></i>
+                <span class="title" >小编信息</span>
+                <span class="selected"></span>
+            </a>
+        </li>
+        <li class="" >
+            <a href="/admin/huser" class="ajax-link">
+                <i class="icon-user"></i>
+                <span class="title" >用户信息</span>
+                <span class="selected"></span>
+            </a>
+        </li>
+    </ul>
+    <!-- END SIDEBAR MENU -->
+</div>
+
+
+<script>
+    $(function () {
+        $(".page-sidebar li").on('click', function () {
+            $(".page-sidebar li").removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>

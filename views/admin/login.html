@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>linkenLiu</title>
+    <link href="/css/admin/bootstrap.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/image/1.jpg"/>
+</head>
+<body>
+<div class="container" style="margin-top: 50px"><br/>
+
+    <div align="center" class="alert alert-danger"><strong>请使用Chrome浏览器浏览本系统</strong></div>
+    <form method="post" id="loginform" role="form" action="/admin/login" class="form-signin">
+        <h3 align="center" id="title" class="form-signin-heading">Login</h3>
+        <div align="center" class="col-sm-4 col-sm-offset-4"><div id="alert-info" class="alert alert-danger">
+        <strong>
+            <%if(errData){%>
+            <%=errData%>
+            <%}else{%>
+            没有权限访问该资源!
+            <%}%>
+        </strong></div></div>
+        <div class="col-sm-4 col-sm-offset-4"><input style="height: 45px;" name="username" id="username" placeholder="Username" value="linkenliu" autofocus="" class="form-control"/><br/></div><br/>
+        <div class="col-sm-4 col-sm-offset-4">
+        <input
+            type="password" placeholder="Password" style="height: 45px;" name="password" value="123" id="password" class="form-control"/><br/></div>
+        <div class="col-sm-4 col-sm-offset-4" style="margin-top: 10px;"><button type="submit"   class="btn btn-lg btn-primary btn-block halfWidth">登录</button></div>
+        <div class="col-sm-4 col-sm-offset-4" style="margin-top: 30px;" align="center"><span class="label label-default">版本: 0.1.0</span></div>
+    </form>
+    <br/><br/><br/>
+</div>
+</body>
+</html>

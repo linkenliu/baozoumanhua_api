@@ -1,0 +1,207 @@
+
+        <!-- BEGIN PAGE HEADER-->
+
+        <div class="row-fluid" style="margin-top: 10px">
+
+            <div class="span12">
+                <h2>用户信息</h2>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="alignRight">
+                                    <input type="text" style="width: 280px !important;" aria-controls="sample_editable_1" ng-model="searchText" ng-change="searchUser()" class="m-wrap medium offset8"  placeholder="Search">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>图像</th>
+                            <th>用户名</th>
+                            <th>昵称</th>
+                            <th>电话</th>
+                            <th>Email</th>
+                            <th>性别</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr ng-repeat="user in userList">
+                                <th>{{$index+1}}</th>
+                                <td>
+                                    <img ng-if="user.avatar"  style="width: 80px;height: 80px;border-radius: 50% !important;margin-left: -14px;" src="{{user.avatar}}"/>
+                                    <img ng-if="!user.avatar"  style="width: 80px;height: 80px;border-radius: 50% !important;margin-left: -14px;" src="http://ohaqd986p.bkt.clouddn.com/noavatar.jpg"/>
+                                    <br/>
+                                    <input type="file" data-id="{{user._id}}" class="avatar" style="width: 60px;margin-left: -5px"/><br/>
+                                    <span class="upload_error" style="color: red;"></span>
+                                </td>
+                                <td>
+                                    <span editable-text="user.username"  e-name="username" e-form="rowform" onbeforesave='checkUserName(user._id,$data)', e-required>
+                                        {{user.username}}
+                                    </span>
+                                </td>
+                                <td>
+                                     <span editable-text="user.nickname" e-name="nickname" e-form="rowform" >
+                                        {{user.nickname}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span editable-text="user.phone" e-name="phone" e-form="rowform" >
+                                    {{user.phone}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span editable-text="user.email" e-name="email" e-form="rowform" onbeforesave='checkEmail(user._id,$data)'>
+                                    {{user.email}}
+                                    </span>
+                                    <div ng-show='rowform.$visible'>
+
+                                        <p><span>密码</span><br/>
+                                            <span editable-text="user.password" e-name="password" e-type="password" e-form="rowform" onbeforesave='checkPassword($data,user._id)', e-placeholder="{{showPlaceHolder(user._id)}}", e-required >{{ user.password }}</span></p>
+                                        <p> <span>确认密码</span><br/>
+                                            <span e-placeholder="确认密码" editable-text="user.password1" e-name="password1" e-type="password" e-form="rowform" onbeforesave='checkPassword1($data)', e-required>{{ user.password1 }}</span></p>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span editable-select='user.sex', e-name='sex', e-form='rowform', e-ng-options='s.value as s.text for s in sexs'>{{showSex(user)}}</span>
+                                </td>
+                                <td>
+                                    <span editable-select='user.state', e-name='state', e-form='rowform', e-ng-options='s.value as s.text for s in states'>{{showState(user)}}</span>
+                                </td>
+                                <td>
+                                    <form editable-form name='rowform' ng-show='rowform.$visible' onbeforesave='saveUser(user._id,$data,rowform)'  shown="inserted == user">
+                                        <button class="btn mini blue" type="submit" ng-disabled='rowform.$waiting'>
+                                            <i class="icon-ok"></i> Save
+                                        </button>
+                                        <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn mini">
+                                            <i class="icon-remove"></i></i> Cancel
+                                        </button>
+                                    </form>
+
+                                    <button class="btn mini blue" ng-show='!rowform.$visible' ng-click='rowform.$show()'>
+                                        <i class="icon-edit"></i> Edit
+                                    </button>
+
+                                    <button class="btn mini red" ng-show='!rowform.$visible' ng-click='deleteUser(user._id,user.username)'>
+                                        <i class="icon-trash"></i> Del
+                                    </button>
+                                    <button class="btn mini yellow" ng-show='!rowform.$visible' ng-click='showimpower(user._id,user.username)'>
+                                        <i class="icon-cogs"></i>Allot
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn " style="margin-bottom: 15px" ng-show='!rowform.$visible' ng-click='addUser()'>新增用户
+                    </button>
+                </div>
+            </div>
+    </div>
+
+<div ng-include="' ./../admin/tpl/delete.html'"></div>
+
+
+<div class="modal" id="impowerModal" tabindex="0" role="dialog" aria-labelledby="gridSystemModalLabel"
+     style="display:none;overflow-y:auto">
+    <input type="hidden" ng-model="delete_id"/>
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header center">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        ng-click="showModal('impowerModal')"></button>
+                <h2 class="modal-title">用户授权</h2>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="box-content">
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th>授权项目</th>
+                                    <th>授权功能/<input type="checkbox" value="1" style="width: 19px;height: 19px">全选</th>
+                                    <th>授权状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>系统概述</td>
+                                    <td>
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">All
+                                        <input type="checkbox" checked="checked" value="1" style="width: 19px;height: 19px">Sel
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Add
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Del
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Edit
+                                    </td>
+                                    <td>
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px;">授权
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px">未授权
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>视频墙</td>
+                                    <td>
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">All
+                                        <input type="checkbox" checked="checked" value="1" style="width: 19px;height: 19px">Sel
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Add
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Del
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Edit
+                                    </td>
+                                    <td>
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px;">授权
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px">未授权
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>帖子信息</td>
+                                    <td>
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">All
+                                        <input type="checkbox" checked="checked" value="1" style="width: 19px;height: 19px">Sel
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Add
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Del
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Edit
+                                    </td>
+                                    <td>
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px;">授权
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px">未授权
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>用户信息</td>
+                                    <td>
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">All
+                                        <input type="checkbox" checked="checked" value="1" style="width: 19px;height: 19px">Sel
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Add
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Del
+                                        <input type="checkbox" value="1" style="width: 19px;height: 19px">Edit
+                                    </td>
+                                    <td>
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px;">授权
+                                        <input type="radio" value="1" name="wimpower" style="width: 19px;height: 19px">未授权
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="showModal('impowerModal')">
+                    <i
+                            class="icon-remove"></i> 取消
+
+                </button>
+                <button type="button" class="btn red" ng-click="destroy()"><i
+                        class="icon-ok"></i> 确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
