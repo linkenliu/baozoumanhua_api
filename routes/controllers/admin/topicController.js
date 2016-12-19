@@ -88,6 +88,7 @@ exports.saveTopic = async (req, res)=> {
     let params = req.body;
     if (params._id) {
         try {
+            let topic = await TopicModel.findOne({_id: params._id});
             if (!topic) {
                 responseObj.errMsg(false, 'no such topic!');
                 res.send(responseObj);
@@ -136,65 +137,37 @@ exports.videowall = async (req, res)=> {
 
 /**
  * pull topic for baozoumanhua
+ * 爬取暴走漫画帖子,爆漫,趣图,文字.
  * @param _params
  */
-exports.pullTopic = (_params)=> {
-    requestModule.get(_params.url, (err, data)=> {
+exports.pullTopic = async (_params)=> {
+    requestModule.get(_params.url, async (err, data)=> {
         if (err) {
             logger.error("#########======>>pull Topic Error :" + err.message);
             return;
         }
         var $ = cheerio.load(data.body.toString());
-        $("div.main-container>div.articles>div.article-" + _params.topic_type).each(function () {
-            var avatar = $(this).find('div.user-item-wrap>div.user-avator img').attr('src');
-            var username = $(this).find('div.user-item-wrap>div.article-meta-body div.article-author-field>a.article-author-name').text();
-            var release_date = $(this).find('div.user-item-wrap>div.article-meta-body div.pull-right>span.article-date').text();
-            var title = $(this).find('div.article-body>div.article-content>h4.article-title>a').text();
-            var image_url = "";
-            if (_params.topic_type != 'text') {
-                image_url = $(this).find('div.article-body>div.article-content a img.lazy').attr('data-original-image-url');
-                if (!image_url) {
-                    image_url = $(this).find('div.article-body>div.article-content ul li img').attr('src');
+        let topicValues = await getTopicValue($, _params);//获取values
+        try {
+            Promise.all(topicValues.map(async (topic) => {//迭代insert
+                let f_topic = await TopicModel.findOne({site_id: topic.site_id});
+                if (!f_topic) {
+                    let newTopic = new TopicModel(topic);
+                    await newTopic.save();
                 }
-                if (!image_url) {
-                    image_url = $(this).find('div.article-body>div.article-content video').attr('data-original-image-url');
-                }
-            }
-            release_date = dateUtil.convertDateTime(release_date);
-            var site_id = $(this).find('div.article-body>div.article-content>h4.article-title>a').attr('href');
-            var topic_second_type = $(this).find('div.user-item-wrap>div.article-meta-body div.pull-right strong.article-label>a').text();
-            if (site_id) {
-                if (site_id.indexOf('?') > -1) {
-                    site_id = site_id.substring(site_id.indexOf('/articles/') + 10, site_id.indexOf('?'));
-                } else {
-                    site_id = site_id.substring(site_id.indexOf('/articles/') + 10, site_id.length);
-                }
-            }
-            var params = {};
-            params.title = title;
-            params.site_id = site_id;
-            params.site_type = _params.site_type;
-            params.avatar = avatar;
-            params.username = username;
-            params.image_url = image_url;
-            params.topic_type = _params.topic_type;
-            params.topic_second_type = topic_second_type;
-            params.release_date = release_date;
-            params.create_date = dateUtil.currentDate();
-            params.update_date = dateUtil.currentDate();
-            var newTopic = new TopicModel(params);
-            console.log(params);
-            newTopic.save((err)=> {
-                if (err) {
-                    logger.error("########=====>>>pull Topic Save Error:" + err.message);
-                    console.log("########=====>>>pull Topic Save Error:" + err.message);
-                }
-            });
-        });
+            }));
+        } catch (err) {
+            logger.error("########===pullTopic Error===>>>" + err.message);
+            console.dir("########===pullTopic Error===>>>" + err.message);
+        }
     });
 };
 
-
+/**
+ * pull topic for baozoumanhua
+ * 爬取暴走漫画帖子,视频
+ * @param _params
+ */
 exports.pullVideoTopic = (_params)=> {
     requestModule.get(_params.url, (err, data)=> {
         if (err) {
@@ -202,57 +175,126 @@ exports.pullVideoTopic = (_params)=> {
             return;
         }
         var $ = cheerio.load(data.body.toString());
-        $("div.video-main>div#top-programmes>div.video-section").each(function () {
-            var params = {};
-            params.site_type = _params.site_type;
-            params.topic_type = _params.topic_type;
-            var topic_second_type = $(this).find('div.vs-header>div.vs-title>h2').text();
-            params.topic_second_type = topic_second_type;
-            $(this).find('div.video-items>div.video-i').each(function () {
-                var video_url_temp = $(this).find('a.vi-thumb').attr('href');
-                var image_url = $(this).find('a.vi-thumb').find('img').attr('src');
-                var title = $(this).find('p.vi-title>a').text();
-                var view_count = $(this).find('div.vi-info>span:first-child').text();
-                var site_id = video_url_temp.replace(/[^0-9]/ig, "");
-                TopicModel.findOne({
-                    site_id: site_id,
-                    site_type: _params.site_type,
-                    topic_type: _params.topic_type
-                }).exec((err, topic)=> {
-                    if (err) {
-                        logger.error("#########======2>>pull Video Topic Error :" + err.message);
-                        return;
-                    }
-                    if (!topic) {
-                        requestModule.get(config.baozoumanhua_service + video_url_temp, (err, data)=> {
-                            if (err) {
-                                logger.error("#########======3>>pull Video Topic Error :" + err.message);
-                                return;
-                            }
-                            var $$ = cheerio.load(data.body.toString());
-                            var video_url = $$("div.video-stage-left>div.video-stage-main div.v-player-box-main>p>object>embed").attr('src');
-                            params.image_url = image_url;
-                            params.title = title;
-                            params.view_count = view_count;
-                            params.site_id = site_id;
-                            params.release_date = dateUtil.currentDate();
-                            params.create_date = dateUtil.currentDate();
-                            params.update_date = dateUtil.currentDate();
-                            params.video_url = video_url;
-                            console.log(+"###" + JSON.stringify(params));
-                            var newTopic = new TopicModel(params);
-                            newTopic.save((err)=> {
-                                if (err) {
-                                    logger.error("#########======>>save Video Topic Error :" + err.message);
-                                    return;
-                                }
-                                console.log(params)
-                            });
-                        });
-                    }
-                });
-            });
+        let topicValues = getVideoTopicValue($, _params);
+        ConverVideoTopicValue(topicValues, (err, topics)=> {
+            try {
+                Promise.all(topics.map(async (topic) => {//迭代insert
+                    let newTopic = new TopicModel(topic);
+                    await newTopic.save();
+                }));
+            } catch (err) {
+                logger.error("########===pullTopic Error===>>>" + err.message);
+                console.dir("########===pullTopic Error===>>>" + err.message);
+            }
         });
     });
 };
 
+
+
+
+
+
+/*get value*/
+let getVideoTopicValue = ($, _params)=> {
+    let topicValues = [];
+    $("div.video-main>div#top-programmes>div.video-section").each(function () {
+        var topic_second_type = $(this).find('div.vs-header>div.vs-title>h2').text();
+        $(this).find('div.video-items>div.video-i').each(function () {
+            var params = {};
+            params.site_type = _params.site_type;
+            params.topic_type = _params.topic_type;
+            params.topic_second_type = topic_second_type;
+            var video_url_temp = $(this).find('a.vi-thumb').attr('href');
+            var image_url = $(this).find('a.vi-thumb').find('img').attr('src');
+            var title = $(this).find('p.vi-title>a').text();
+            var view_count = $(this).find('div.vi-info>span:first-child').text();
+            var site_id = video_url_temp.replace(/[^0-9]/ig, "");
+            params.image_url = image_url;
+            params.video_url_temp = video_url_temp;
+            params.title = title;
+            params.site_id = site_id;
+            params.view_count = view_count;
+            params.release_date = dateUtil.currentDate();
+            params.create_date = dateUtil.currentDate();
+            params.update_date = dateUtil.currentDate();
+            topicValues.push(params);
+        });
+    });
+    return topicValues;
+};
+
+
+let ConverVideoTopicValue = (_topicValues, next) => {
+    let topicValueArr = [];
+    let topicValues = _topicValues;
+    async.mapSeries(topicValues, (item, cb)=> {
+        TopicModel.findOne({site_id: item.site_id}, (err, topic) => {
+            if (!err && !topic) {
+                requestModule.get(config.baozoumanhua_service + item.video_url_temp, (err, data)=> {
+                    if (err) {
+                        logger.error("#########======3>>pull Video Topic Error :" + err.message);
+                        return;
+                    }
+                    let $$ = cheerio.load(data.body.toString());
+                    var video_url = $$("div.video-stage-left>div.video-stage-main div.v-player-box-main>p>object>embed").attr('src');
+                    item.video_url = video_url;
+                    topicValueArr.push(item);
+                    cb(null, item);
+                });
+            } else {
+                cb('error or exist topic ');
+            }
+        });
+    }, (err)=> {
+        console.log("#######" + topicValueArr.length + "------" + JSON.stringify(topicValueArr));
+        next(err, topicValueArr);
+    });
+};
+
+
+/*get value*/
+let getTopicValue = ($, _params)=> {
+    let topicValues = [];
+    $("div.main-container>div.articles>div.article-" + _params.topic_type).each(function () {
+        let avatar = $(this).find('div.user-item-wrap>div.user-avator img').attr('src');
+        let username = $(this).find('div.user-item-wrap>div.article-meta-body div.article-author-field>a.article-author-name').text();
+        let release_date = $(this).find('div.user-item-wrap>div.article-meta-body div.pull-right>span.article-date').text();
+        let title = $(this).find('div.article-body>div.article-content>h4.article-title>a').text();
+        let image_url = "";
+        if (_params.topic_type != 'text') {
+            image_url = $(this).find('div.article-body>div.article-content a img.lazy').attr('data-original-image-url');
+            if (!image_url) {
+                image_url = $(this).find('div.article-body>div.article-content ul li img').attr('src');
+            }
+            if (!image_url) {
+                image_url = $(this).find('div.article-body>div.article-content video').attr('data-original-image-url');
+            }
+        }
+        release_date = dateUtil.convertDateTime(release_date);
+        let site_id = $(this).find('div.article-body>div.article-content>h4.article-title>a').attr('href');
+        let topic_second_type = $(this).find('div.user-item-wrap>div.article-meta-body div.pull-right strong.article-label>a').text();
+        if (site_id) {
+            if (site_id.indexOf('?') > -1) {
+                site_id = site_id.substring(site_id.indexOf('/articles/') + 10, site_id.indexOf('?'));
+            } else {
+                site_id = site_id.substring(site_id.indexOf('/articles/') + 10, site_id.length);
+            }
+        }
+        let value = {
+            avatar: avatar,
+            title: title,
+            site_id: site_id,
+            site_type: _params.site_type,
+            username: username,
+            image_url: image_url,
+            topic_type: _params.topic_type,
+            topic_second_type: topic_second_type,
+            release_date: release_date,
+            create_date: dateUtil.currentDate(),
+            update_date: dateUtil.currentDate()
+        };
+        topicValues.push(value);
+    });
+    return topicValues;
+};
