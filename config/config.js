@@ -25,14 +25,14 @@ module .exports = {
         }
     ],
     "qiniu_config":{
-        "accessKey":"DCqIYmhHuIgLdfUWpcn4Lzo-1QZ1juBALUTFVTkb",
-        "secretKey":"Bp7Io4kyOOmN9HEiFJ8GNhKfcUk9fV6IDywtEuC0"
+        "accessKey":"you qiniu accessKey",
+        "secretKey":"you qiniu secretKey"
     },
-    "mongoDB":"mongodb://127.0.0.1:27017/blogDB",
+    "mongoDB":"mongodb://127.0.0.1:27017/database",
     "redisDB": {
         "dbhost": "127.0.0.1",
         "port": 6379,
         "password": ""
     },
-    qiniu:'http://ohaqd986p.bkt.clouddn.com/'
+    qiniu:'you qiniu service'
 };

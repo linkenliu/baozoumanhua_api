@@ -2,6 +2,7 @@
 const express = require('express'),
     router = express.Router(),
     moment = require("moment"),
+    schedule = require('node-schedule'),
     multipart = require('connect-multiparty'),
     multipartMiddleware = multipart(),
     userController = require('./controllers/admin/userController'),
@@ -15,34 +16,6 @@ const express = require('express'),
 router.get('/', function (req, res) {
     res.render('admin/login',{errData:''});
 });
-
-
-/*
-var i = 1;
-setInterval(function(){
-    topicController.pullTopic({url:'http://baozoumanhua.com/baoman?page='+i+'&sv=1479024301',site_type:'baozoumanhua',topic_type:'baoman'});
-    i+=1;
-},8000);
-*/
-
-/*var i = 1;
-setInterval(function(){
-    topicController.pullTopic({url:'http://baozoumanhua.com/qutu?page='+i+'&sv=1479040201',site_type:'baozoumanhua',topic_type:'qutu'});
-    i+=1;
-},8000);*/
-
-/*
-
-var i = 1;
-setInterval(function(){
-    topicController.pullTopic({url:'http://baozoumanhua.com/text?page='+i+'&sv=1479220502',site_type:'baozoumanhua',topic_type:'text'});
-    i+=1;
-},5000);
-*/
-
-//topicController.pullVideoTopic({url:'http://baozoumanhua.com/videos',site_type:'baozoumanhua',topic_type:'videos'});
-
-
 
 //login
 router.post('/admin/login',userController.login);
@@ -92,6 +65,42 @@ router.get('/admin/v1/huser',huserController.getHuserList);
 router.delete('/admin/v1/:model/:_id',commonModelController.deleteModel);
 
 router.post('/admin/v1/upload',multipartMiddleware,commonModelController.upload);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+setInterval(function(){
+    topicController.pullTopic({url:'http://baozoumanhua.com/baoman?page=1&sv=1479024301',site_type:'baozoumanhua',topic_type:'baoman'});
+},1000*60*10);
+
+
+setInterval(function(){
+    topicController.pullTopic({url:'http://baozoumanhua.com/qutu?page=1&sv=1479040201',site_type:'baozoumanhua',topic_type:'qutu'});
+},1000*60*11);
+
+
+setInterval(function(){
+    topicController.pullTopic({url:'http://baozoumanhua.com/text?page=1&sv=1479220502',site_type:'baozoumanhua',topic_type:'text'});
+},1000*60*12);
+
+
+var j = schedule.scheduleJob("10 3 0 * * *", function () {
+    topicController.pullVideoTopic({url:'http://baozoumanhua.com/videos',site_type:'baozoumanhua',topic_type:'videos'});
+});
+
+topicController.pullVideoTopic({url:'http://baozoumanhua.com/videos',site_type:'baozoumanhua',topic_type:'videos'});
+
+
 
 router.get('/admin/*', function (req, res) {
     res.render('admin/index', {title: 'Express'});

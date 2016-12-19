@@ -14,14 +14,6 @@ router.get('/home', function (req, res) {
     res.render('home/home');
 });
 
-router.get('/sss', function (req, res) {
-    res.render('home/index22');
-});
-
-router.get('/test', function (req, res) {
-    res.render('home/test');
-});
-
 
 //topic
 router.get('/home/v1/getTopic', topicController.getTopicList);
@@ -43,7 +35,6 @@ router.get('/home/v1/checkEmail', userController.checkEmail);
 
 //login
 router.post('/home/v1/login', userController.login);
-
 
 
 
