@@ -1,6 +1,4 @@
-/**
- * Created by admin on 2015/7/7.
- */
+
 // 引入 gulp
 var gulp = require('gulp');
 
