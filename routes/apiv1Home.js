@@ -44,10 +44,7 @@ router.get('/home/v1/checkEmail', userController.checkEmail);
 //login
 router.post('/home/v1/login', userController.login);
 
-//chat
-router.get('/chat', function (req, res) {
-    res.render('client/index')
-});
+
 
 
 module.exports = router;
